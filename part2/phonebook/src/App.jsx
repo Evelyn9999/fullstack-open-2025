@@ -1,15 +1,19 @@
 import { useState } from 'react'
+import { initialPersons } from "./data/initialPersons";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 const App = () => {
-    const [persons, setPersons] = useState([
-        { id: 1, name: "Arto Hellas",     number: "040-123456" },
-        { id: 2, name: "Ada Lovelace",    number: "39-44-5323523" },
-        { id: 3, name: "Dan Abramov",     number: "12-43-234345" },
-        { id: 4, name: "Mary Poppendieck",number: "39-23-6423122" },
-    ])
+    const [persons, setPersons] = useState(initialPersons)
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+
+    // Handlers stay in App
+    const handleFilterChange = (e) => setFilter(e.target.value);
+    const handleNameChange   = (e) => setNewName(e.target.value);
+    const handleNumberChange = (e) => setNewNumber(e.target.value);
 
     const addPerson = (event) => {
         event.preventDefault() // prevents page reload
@@ -40,41 +44,24 @@ const App = () => {
         setNewNumber('')
     }
 
-    const personToShow = persons.filter(person =>
+    const personsToShow = persons.filter(person =>
         person.name.toLowerCase().includes(filter.toLowerCase())
     )
 
     return (
         <div>
             <h2>Phonebook</h2>
-            <div>
-                filter shown with <input
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                />
-            </div>
+            <Filter filter={filter} onChange={handleFilterChange} />
             <h2>add a new</h2>
-            <form onSubmit={addPerson}>
-                <div>
-                    name: <input
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                    />
-                </div>
-                <div>
-                    number: <input
-                        value={newNumber}
-                        onChange={(e) => setNewNumber(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
-            </form>
+            <PersonForm
+                onSubmit={addPerson}
+                newName={newName}
+                onNameChange={handleNameChange}
+                newNumber={newNumber}
+                onNumberChange={handleNumberChange}
+            />
             <h2>Numbers</h2>
-            <ul>
-                {personToShow.map((p) => <li key={p.id}>{p.name} {p.number}</li>)}
-            </ul>
+            <Persons persons={personsToShow} />
         </div>
     )
 }
