@@ -54,6 +54,23 @@ const App = () => {
             })
     }
 
+    const deletePerson = (id) => {
+        const personDelete = persons.find(p => p.id === id)
+
+        if(window.confirm(`Delete ${personDelete.name}?`)) {
+            personService
+                .remove(id)
+                .then(() => {
+                    setPersons(persons.filter(p => p.id !== id))
+                })
+                .catch((err) => {
+                    console.log('DELETE failed', { id, err, status: err.response?.status })
+                    alert(`'${personDelete.name}' was already removed from server`)
+                    setPersons(persons.filter(p => p.id !== id))
+                })
+        }
+    }
+
     const personsToShow = persons.filter(person =>
         person.name.toLowerCase().includes(filter.toLowerCase())
     )
@@ -71,7 +88,7 @@ const App = () => {
                 onNumberChange={handleNumberChange}
             />
             <h2>Numbers</h2>
-            <Persons persons={personsToShow} />
+            <Persons persons={personsToShow} deletePerson={deletePerson}/>
         </div>
     )
 }

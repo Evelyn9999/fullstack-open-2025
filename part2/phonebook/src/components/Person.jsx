@@ -1,7 +1,8 @@
-const Person = ({ name, number }) => (
+const Person = ({person, onDelete }) => (
     <li>
-        {name} {number}
+        {person.name} {person.number}
+        <button onClick={onDelete}>delete</button>
     </li>
 );
 
-export default Person;
+export default Person
