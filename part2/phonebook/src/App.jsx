@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personService from './services/persons'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -12,9 +12,11 @@ const App = () => {
 
     // ✅ Fetch once on mount
     useEffect(() => {
-        axios.get('http://localhost:3001/persons').then(res => {
-            setPersons(res.data);
-        });
+       personService
+           .getAll()
+           .then(initialPersons => {
+               setPersons(initialPersons)
+           })
     }, []);
 
     // Handlers stay in App
@@ -39,17 +41,14 @@ const App = () => {
         }
 
         // add new Object
-        const nextId = Math.max(...persons.map(p => p.id), 0) + 1
         const newObject = {
-            id: nextId,
             name,
             number,
         }
-        axios
-            .post('http://localhost:3001/persons', newObject)
-            .then(res => {
-                console.log(res)
-                setPersons(persons.concat(res.data))
+        personService
+            .create(newObject)
+            .then(returnedPerson => {
+                setPersons([...persons, returnedPerson])
                 setNewName('')
                 setNewNumber('')
             })
