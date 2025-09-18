@@ -31,16 +31,38 @@ const App = () => {
         const number = newNumber.trim();
         if (!name || !number) return;
 
-        // check if the name already exists
-        const exists = persons.some(
+        // 1) Check if the name already exists
+        const existing = persons.find(
             p => p.name.toLowerCase() === name.toLowerCase()
         )
-        if (exists) {
-            alert(`${name} is already added to phonebook`)
+        if (existing) {
+            // 2) Ask for confirmation
+            const ok = window.confirm(
+                `${existing.name} is already added to phonebook, replace the old number with a new one?`
+            )
+            if (!ok) return
+
+            // 3) PUT update to backend
+            const updatedPerson = {...existing, number}
+            personService
+                .update(existing.id, updatedPerson)
+                .then(returnedPerson => {
+                    // 4) Replace in state
+                    setPersons(persons.map(p => p.id === existing.id ? returnedPerson : p))
+                    setNewName('')
+                    setNewNumber('')
+                })
+                .catch(err => {
+                    // If it was deleted on server, inform user and clean it from UI
+                    alert(`Information of '${existing.name}' has already been removed from server`)
+                    setPersons(persons.filter(p => p.id !== existing.id))
+                })
+
             return
         }
 
-        // add new Object
+
+        // 5) Otherwise create a brand new person
         const newObject = {
             name,
             number,
