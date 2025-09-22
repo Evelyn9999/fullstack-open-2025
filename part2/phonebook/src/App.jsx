@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import personService from './services/persons'
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [notification, setNotification] = useState({ message: null, type: null })
 
     // ✅ Fetch once on mount
     useEffect(() => {
@@ -23,6 +25,12 @@ const App = () => {
     const handleFilterChange = (e) => setFilter(e.target.value);
     const handleNameChange   = (e) => setNewName(e.target.value);
     const handleNumberChange = (e) => setNewNumber(e.target.value);
+
+    // addPerson: Show Notification
+    const showNotice = (message, type = 'success') => {
+        setNotification({ message, type })
+        setTimeout(() => setNotification({ message: null, type: null}), 5000)
+    }
 
     const addPerson = (event) => {
         event.preventDefault() // prevents page reload
@@ -51,18 +59,20 @@ const App = () => {
                     setPersons(persons.map(p => p.id === existing.id ? returnedPerson : p))
                     setNewName('')
                     setNewNumber('')
+                    showNotice(`Updated the Number of ${returnedPerson.name}`, 'success');
                 })
                 .catch(err => {
                     // If it was deleted on server, inform user and clean it from UI
-                    alert(`Information of '${existing.name}' has already been removed from server`)
+                    showNotice(
+                        `Information for '${existing.name}' was already removed from server`,
+                        'error'
+                    )
                     setPersons(persons.filter(p => p.id !== existing.id))
                 })
-
             return
         }
 
-
-        // 5) Otherwise create a brand new person
+        // 5) Otherwise create a brand new person + Shoe Nitifications
         const newObject = {
             name,
             number,
@@ -73,6 +83,10 @@ const App = () => {
                 setPersons([...persons, returnedPerson])
                 setNewName('')
                 setNewNumber('')
+                showNotice(`Added ${returnedPerson.name}`, 'success')
+            })
+            .catch(err => {
+                showNotice('Failed to add person', 'error')
             })
     }
 
@@ -84,10 +98,11 @@ const App = () => {
                 .remove(id)
                 .then(() => {
                     setPersons(persons.filter(p => p.id !== id))
+                    showNotice(`Deleted ${personDelete.name}`, 'success');
                 })
                 .catch((err) => {
                     console.log('DELETE failed', { id, err, status: err.response?.status })
-                    alert(`'${personDelete.name}' was already removed from server`)
+                    showNotice(`'${personDelete.name}' was already removed from server`, 'error');
                     setPersons(persons.filter(p => p.id !== id))
                 })
         }
@@ -100,6 +115,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notification.message} type={notification.type} />
             <Filter filter={filter} onChange={handleFilterChange} />
             <h2>add a new</h2>
             <PersonForm
