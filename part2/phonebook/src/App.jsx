@@ -61,7 +61,7 @@ const App = () => {
                     setNewNumber('')
                     showNotice(`Updated the Number of ${returnedPerson.name}`, 'success');
                 })
-                .catch(err => {
+                .catch(() => {
                     // If it was deleted on server, inform user and clean it from UI
                     showNotice(
                         `Information for '${existing.name}' was already removed from server`,
@@ -72,7 +72,7 @@ const App = () => {
             return
         }
 
-        // 5) Otherwise create a brand new person + Shoe Nitifications
+        // 5) Otherwise create a brand-new person + Shoe notifications
         const newObject = {
             name,
             number,
@@ -85,7 +85,7 @@ const App = () => {
                 setNewNumber('')
                 showNotice(`Added ${returnedPerson.name}`, 'success')
             })
-            .catch(err => {
+            .catch(() => {
                 showNotice('Failed to add person', 'error')
             })
     }
