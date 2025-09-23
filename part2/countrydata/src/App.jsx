@@ -9,6 +9,7 @@ function App() {
     const [countries, setCountries] = useState([]);
     const [query, setQuery] = useState('');
     const [error, setError] = useState('');
+    const [selected, setSelected] = useState(null);   // Show Button
 
     useEffect(() => {
         countryService.getAll()
@@ -22,6 +23,14 @@ function App() {
             });
     }, []);
 
+    // Show Button: When typing a new filter, clear selection if it no longer matches
+    useEffect(() => {
+        if (!selected) return;
+        const name = selected?.name?.common?.toLowerCase() || '';
+        const q = query.trim().toLowerCase();
+        if (q && !name.includes(q)) setSelected(null);
+    }, [query, selected]);
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
         if (!q) return [];
@@ -31,12 +40,17 @@ function App() {
     }, [countries, query]);
 
     let content;
-    if (!query) {
-        content = null;
+    if (selected) {
+        content = (
+            <>
+                <button onClick={() => setSelected(null)}>Back</button>
+                <CountryDetails country={selected} />
+            </>
+        )
     } else if (filtered.length > 10) {
         content = <p>Too many matches, specify another filter</p>;
     } else if (filtered.length > 1) {
-        content = <CountriesList countries={filtered} />;
+        content = <CountriesList countries={filtered} onShow={setSelected} />; // pass handler
     } else if (filtered.length === 1) {
         content = <CountryDetails country={filtered[0]} />;
     } else {
