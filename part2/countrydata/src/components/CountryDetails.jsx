@@ -1,3 +1,5 @@
+import Weather from './Weather';
+
 function CountryDetails({ country }) {
     const name = country?.name?.common ?? '';
     const capital = Array.isArray(country.capital)
@@ -7,6 +9,7 @@ function CountryDetails({ country }) {
     const languages = Object.values(country.languages || {});
     const flag = country?.flags?.png || country?.flags?.svg;
     const flagAlt = country?.flags?.alt || `${name} flag`;
+    const latlng = country?.capitalInfo?.latlng;   // [lat, lon] if available
 
     return (
         <div>
@@ -20,6 +23,11 @@ function CountryDetails({ country }) {
             </ul>
 
             {flag && <img src={flag} alt={flagAlt} style={{ maxWidth: 300, height: 'auto' }} />}
+
+            {/* Weather */}
+            {capital !== '—' && (
+                <Weather capital={capital} latlng={latlng} />
+            )}
         </div>
     );
 }
