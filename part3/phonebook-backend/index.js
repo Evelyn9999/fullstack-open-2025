@@ -1,8 +1,10 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json()) // JSON body parser
 
+// --- Persons dataset ---
 let persons =[
     {
         id: "1",
@@ -26,6 +28,14 @@ let persons =[
     }
     ]
 
+// STEP3,7-3,8 Morgan config
+morgan.token('body', (req) => {
+    return req.method === 'POST' ? JSON.stringify(req.body) : ''
+})
+// Use :body only if POST, otherwise it's empty string
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+// --- Routes ---
 // STEP 3.1
 app.get('/', (req, res) => {
     res.send('<h1>Phonebook</h1>')
@@ -88,6 +98,13 @@ app.post('/api/persons', (req, res) => {
     res.status(201).json(personNew)
 })
 
+// --- middleware: unknown endpoint (after routes)
+const unknownEndpoint = (req, res) => {
+    res.status(404).json({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+// --- Start server ---
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
