@@ -3,16 +3,6 @@ const app = express()
 
 app.use(express.json()) // JSON body parser
 
-// logger
-const requestLogger = (req, _res, next) => {
-    console.log('Method:', req.method)
-    console.log('Path:  ', req.path)
-    console.log('Body:  ', req.body)
-    console.log('---')
-    next()
-}
-app.use(requestLogger)
-
 let persons =[
     {
         id: "1",
@@ -97,13 +87,6 @@ app.post('/api/persons', (req, res) => {
     persons = persons.concat(personNew)
     res.status(201).json(personNew)
 })
-
-// unknown endpoint (after routes)
-const unknownEndpoint = (_req, res) => {
-    res.status(404).json({ error: 'unknown endpoint' })
-}
-app.use(unknownEndpoint)
-
 
 const PORT = 3001
 app.listen(PORT, () => {
