@@ -1,17 +1,37 @@
-### All notes
+### 3.1 all persons
 GET http://localhost:3001/api/persons
 
-### info
+### 3.2 info
 GET http://localhost:3001/info
 
-### One note
+### 3.3 one person
 GET http://localhost:3001/api/persons/1
 
-### Create
+### 3.4 delete
+DELETE http://localhost:3001/api/persons/2
+
+### 3.5 create (valid)
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
-{ "name": "Grace Hopper", "number": "555-123456" }
+{
+  "name": "Grace Hopper",
+  "number": "555-123456"
+}
 
-### Delete
-DELETE http://localhost:3001/api/persons/3
+### 3.6 create (missing number -> 400)
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Linus Torvalds"
+}
+
+### 3.6 create (duplicate name -> 400)
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "000-000000"
+}
