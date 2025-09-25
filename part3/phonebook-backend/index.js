@@ -65,6 +65,28 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end()
 })
 
+//STEP 3,5 post & STEP3,6 Validation
+const generateId = () => Math.floor(Math.random() * 1_000_000_000)
+app.post('/api/persons', (req, res) => {
+    const body = req.body
+    // Validate required fields
+    if (!body.name || !body.number){
+        return res.status(404).json({error: 'The name or number is missing'})
+    }
+    // Validate uniqueness by name (case-sensitive per exercise norm)
+    const exits = persons.some(p => p.name === body.name)
+    if (exits) {
+        return res.status(400).json({error: 'name must be unique'})
+    }
+
+    const personNew = {
+        id: generateId(),
+        name: body.name,
+        number: body.number,
+    }
+    persons = persons.concat(personNew)
+    res.status(201).json(personNew)
+})
 
 const PORT = 3001
 app.listen(PORT, () => {

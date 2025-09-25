@@ -11,7 +11,7 @@ GET http://localhost:3001/api/persons/1
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
-{ "content": "from http client", "important": true }
+{ "name": "Grace Hopper", "number": "555-123456" }
 
 ### Delete
 DELETE http://localhost:3001/api/persons/3
