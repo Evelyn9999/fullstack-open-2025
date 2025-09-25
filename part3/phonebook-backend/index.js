@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json()) // JSON body parser
+
 let persons =[
     {
         "id": "1",
@@ -28,6 +30,18 @@ let persons =[
 app.get('/', (req, res) => {
     res.send('<h1>Phonebook</h1>')
 })
+
+// STEP 3,2 info page
+app.get('/info', (req, res) => {
+    const count = persons.length
+    const now = new Date()
+    res.send(`
+        <p>Phonebook has info for ${count} people</p>
+        <p>${now}</p>
+    `)
+})
+
+
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
